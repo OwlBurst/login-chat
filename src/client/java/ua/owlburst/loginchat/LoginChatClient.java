@@ -9,9 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoginChatClient implements ClientModInitializer {
-	public static final Logger LOGGER = LoggerFactory.getLogger("loginchat");
-	private static void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
-		if (client.player != null) {
+    public static final Logger LOGGER = LoggerFactory.getLogger("loginchat");
+    private static void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+        if (client.player != null) {
             String input = "say Hello";
             client.player.sendChatMessage("Hello everypony!", null);
             client.player.sendCommand(input, null);
@@ -20,10 +20,10 @@ public class LoginChatClient implements ClientModInitializer {
                 LOGGER.info(client.getCurrentServerEntry().address);
             }
         }
-	}
+    }
 
-	@Override
-	public void onInitializeClient() {
-		ClientPlayConnectionEvents.JOIN.register((LoginChatClient::onPlayReady));
-	}
+    @Override
+    public void onInitializeClient() {
+        ClientPlayConnectionEvents.JOIN.register((LoginChatClient::onPlayReady));
+    }
 }
