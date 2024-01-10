@@ -1,9 +1,9 @@
 plugins {
 	id 'fabric-loom' version '1.5-SNAPSHOT'
-	id 'maven-publish'
+//	id 'maven-publish'
 }
 
-version = project.mod_version
+version = project.minecraft_version + "-" + project.mod_version
 group = project.maven_group
 
 base {
@@ -75,11 +75,11 @@ jar {
 
 // configure the maven publication
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
+//	publications {
+//		mavenJava(MavenPublication) {
+//			from components.java
+//		}
+//	}
 
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
