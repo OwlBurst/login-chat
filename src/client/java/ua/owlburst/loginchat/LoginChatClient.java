@@ -14,7 +14,9 @@ public class LoginChatClient implements ClientModInitializer {
         if (client.player != null) {
             String input = "say Hello";
             client.player.sendChatMessage("Hello everypony!", null);
-            client.player.sendCommand(input, null);
+            LoginChatThread thread = new LoginChatThread(client, input);
+            thread.start();
+
             if (client.getCurrentServerEntry() != null) {
                 LOGGER.info(String.valueOf(client.isInSingleplayer()));
                 LOGGER.info(client.getCurrentServerEntry().address);
@@ -25,5 +27,27 @@ public class LoginChatClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientPlayConnectionEvents.JOIN.register((LoginChatClient::onPlayReady));
+    }
+}
+
+class LoginChatThread extends Thread {
+    MinecraftClient client;
+    String input;
+    public LoginChatThread(MinecraftClient client, String input) {
+        this.client = client;
+        this.input = input;
+    }
+    public void run() {
+        while (true) {
+            if (net.fabricmc.fabric.impl.command.client.ClientCommandInternals.getActiveDispatcher() != null && client.player != null) {
+                client.player.sendCommand(input, null);
+                break;
+            } else {
+                try {
+                    LoginChatClient.LOGGER.info("Delaying the command...");
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {}
+            }
+        }
     }
 }
