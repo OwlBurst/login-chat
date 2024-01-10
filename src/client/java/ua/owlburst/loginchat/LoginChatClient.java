@@ -39,12 +39,14 @@ class LoginChatThread extends Thread {
     }
     public void run() {
         while (true) {
+            //noinspection UnstableApiUsage
             if (net.fabricmc.fabric.impl.command.client.ClientCommandInternals.getActiveDispatcher() != null && client.player != null) {
                 client.player.sendCommand(input, null);
                 break;
             } else {
                 try {
                     LoginChatClient.LOGGER.info("Delaying the command...");
+                    //noinspection BusyWait
                     Thread.sleep(1000);
                 } catch (InterruptedException ignored) {}
             }
