@@ -8,8 +8,7 @@
 		"Owl Burst"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/whitebear60/login-chat"
 	},
 	"license": "CC0-1.0",
 	"environment": "*",
