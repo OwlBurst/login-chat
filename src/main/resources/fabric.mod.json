@@ -3,39 +3,31 @@
 	"id": "loginchat",
 	"version": "${version}",
 	"name": "Login Chat",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "The mod that sends chat messages after connecting to the server",
 	"authors": [
-		"Me!"
+		"Owl Burst"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/whitebear60/login-chat"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/loginchat/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
-			"loginchat.LoginChat"
-		],
 		"client": [
-			"loginchat.LoginChatClient"
+			"ua.owlburst.loginchat.LoginChatClient"
+		],
+		"modmenu": [
+			"ua.owlburst.loginchat.ModMenuImpl"
 		]
 	},
-	"mixins": [
-		"loginchat.mixins.json",
-		{
-			"config": "loginchat.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=0.15.3",
-		"minecraft": "~1.20.1",
+		"minecraft": ["1.19.4", "~1.20.1"],
 		"java": ">=17",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"yet_another_config_lib_v3": "*"
 	},
-	"suggests": {
-		"another-mod": "*"
+	"recommends": {
+		"modmenu": "*"
 	}
 }

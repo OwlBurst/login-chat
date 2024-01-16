@@ -1,0 +1,15 @@
+{
+  "loginchat.config.serverslist": "Servers List",
+  "loginchat.config.serverslist.desc": "List of servers on which the mod is enabled",
+
+  "loginchat.config.messageslist": "Messages List",
+  "loginchat.config.messageslist.desc": "List of the messages the mod should send at the start of the session. May contain commands, those should start with a /.",
+
+  "loginchat.config.singleplayer": "Enabled in singleplayer?",
+  "loginchat.config.singleplayer.desc": "Should the mod send the messages, specified in the messages list, at the start of the singleplayer session?",
+
+  "loginchat.config.delay": "Chat Messages Delay",
+  "loginchat.config.delay.desc": "The amount of time in milliseconds that will pass since joining the server or the world before the chat messages you specified in the config will be sent (does not affect command execution, it is controlled by the commandsDelay setting"
+
+
+}
