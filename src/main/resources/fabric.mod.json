@@ -8,8 +8,9 @@
 		"Owl Burst"
 	],
 	"contact": {
-		"sources": "https://github.com/whitebear60/login-chat"
-	},
+		"sources": "https://github.com/whitebear60/login-chat",
+      	"issues": "https://github.com/whitebear60/login-chat/issues"
+    },
 	"license": "CC0-1.0",
 	"environment": "client",
 	"entrypoints": {
@@ -22,10 +23,10 @@
 	},
 	"depends": {
 		"fabricloader": ">=0.15.3",
-		"minecraft": ["1.19.4", "~1.20.1"],
+		"minecraft": ["~1.20"],
 		"java": ">=17",
 		"fabric-api": "*",
-		"yet_another_config_lib_v3": "*"
+		"yet_another_config_lib_v3": ">=3.2.1+1.20"
 	},
 	"recommends": {
 		"modmenu": "*"
