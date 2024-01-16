@@ -25,7 +25,7 @@ public class LoginChatClient implements ClientModInitializer {
 		LoginChatClient.delayedMessagesCount = 0;
 		ArrayList<String> serversList = new ArrayList<>(LoginChatConfig.HANDLER.instance().serversList);
 		ArrayList<String> commandsList = new ArrayList<>(LoginChatConfig.HANDLER.instance().commandsList);
-		serversList.forEach(el -> LOGGER.info(MessageFormat.format("Server in the list: {0}", el)));
+		LOGGER.info(MessageFormat.format("Server in the list: {0}", serversList.toArray()));
 		boolean isSinglePlayer;
 		try {
 			isSinglePlayer = client.getServer().isSingleplayer();
@@ -37,7 +37,7 @@ public class LoginChatClient implements ClientModInitializer {
 			String ip = handler.getConnection().getAddress().toString();
 			ip = ip.split("/")[0].replaceAll("\\.$", "");
 			if (serversList.contains(ip)) {
-				LOGGER.info(MessageFormat.format("Joining the server: {0}", ip));
+				LOGGER.info(MessageFormat.format("Server Address for Login Chat: {0}", ip));
 				send(client, commandsList);
 			}
 		} else {
@@ -49,7 +49,7 @@ public class LoginChatClient implements ClientModInitializer {
 	}
 
 	private static void send(MinecraftClient client, @NotNull ArrayList<String> commandsList) {
-		ExecutorService commandsExecutor = Executors.newSingleThreadExecutor();
+		ExecutorService commandsExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "Login Chat"));
 		commandsList.forEach(el -> commandsExecutor.submit(new SendCommandTask(client, el)));
 	}
 
