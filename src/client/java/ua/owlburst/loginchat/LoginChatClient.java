@@ -1,7 +1,6 @@
 package ua.owlburst.loginchat;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
@@ -19,8 +18,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static java.lang.Thread.sleep;
 
 public class LoginChatClient implements ClientModInitializer {
 	public static int delayedMessagesCount = 0;
@@ -76,52 +73,5 @@ public class LoginChatClient implements ClientModInitializer {
 		LoginChatConfig.HANDLER.load();
 		ClientPlayConnectionEvents.JOIN.register((LoginChatClient::onPlayReady));
 
-	}
-}
-
-class SendCommandTask implements Runnable {
-	MinecraftClient client;
-	String input;
-
-	public SendCommandTask(MinecraftClient client, String input) {
-		this.client = client;
-		this.input = input;
-	}
-
-	public void run() {
-		int chatMessagesDelay = LoginChatConfig.HANDLER.instance().chatMessagesDelay;
-		if (chatMessagesDelay > 0 && LoginChatClient.delayedMessagesCount <= 0) {
-			LoginChatClient.LOGGER.info(MessageFormat.format("Delaying the chat messages by {0} " +
-							"milliseconds",
-					chatMessagesDelay));
-			try {
-				sleep(chatMessagesDelay);
-				LoginChatClient.delayedMessagesCount++;
-			} catch (InterruptedException ignored) {
-			}
-		}
-		if (input.startsWith("/")) {
-			input = input.substring(1);
-			LoginChatClient.LOGGER.info(MessageFormat.format("Command to execute: {0}", this.input));
-			for (int i = 0; i < 5; i++) {
-				if (ClientCommandManager.getActiveDispatcher() != null && client.player != null) {
-					client.player.networkHandler.sendChatCommand(input);
-                    break;
-				} else {
-					LoginChatClient.LOGGER.error(MessageFormat.format("Unable to execute the command: {0}...", input));
-					try {
-						sleep(1000);
-					} catch (InterruptedException ignored) {
-					}
-				}
-			}
-		} else {
-			if (client.player != null) {
-				LoginChatClient.LOGGER.info(MessageFormat.format("Sending the chat message: {0}", this.input));
-				client.player.networkHandler.sendChatMessage(input);
-			} else {
-				LoginChatClient.LOGGER.warn("Can't send the chat message, can't get the player data");
-			}
-		}
 	}
 }
