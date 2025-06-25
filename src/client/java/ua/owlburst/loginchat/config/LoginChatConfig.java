@@ -91,7 +91,7 @@ public class LoginChatConfig{
                                                 ".desc")))
                                         .controller(opt -> IntegerSliderControllerBuilder.create(opt)
                                                 .range(0, 10000)
-                                                .step(500)
+                                                .step(100)
                                                 .formatValue(val -> Text.of(MessageFormat.format("{0} ms", val))))
                                         .binding(Binding.generic(defaults.chatMessagesDelay,
                                                 () -> config.chatMessagesDelay,
