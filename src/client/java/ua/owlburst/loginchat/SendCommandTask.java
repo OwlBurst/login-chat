@@ -3,8 +3,6 @@ package ua.owlburst.loginchat;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.minecraft.client.MinecraftClient;
 
-import java.text.MessageFormat;
-
 import static java.lang.Thread.sleep;
 
 class SendCommandTask implements Runnable {
