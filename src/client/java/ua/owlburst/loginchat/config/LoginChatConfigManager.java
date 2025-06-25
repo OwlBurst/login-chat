@@ -4,11 +4,14 @@ import net.minecraft.text.Text;
 import ua.owlburst.loginchat.LoginChatClient;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Scanner;
 
-public class ConfigManager {
+public class LoginChatConfigManager {
     public static void init() {
         LoginChatConfig.HANDLER.load();
         LoginChatConfig.MOD_CONFIG_FOLDER.mkdirs();
@@ -50,5 +53,23 @@ public class ConfigManager {
                 LoginChatClient.LOGGER.error("Exception thrown when trying to create the mod config folder", e);
             }
         }
+    }
+
+    public static ArrayList<String> load(String ip) {
+        ArrayList<String> commandsList = new ArrayList<>();
+        File file = new File(LoginChatConfig.MOD_CONFIG_FOLDER, ip + ".txt");
+        if (file.exists()) {
+            try (Scanner sc = new Scanner(file)) {
+                while (sc.hasNextLine()) {
+                    String line = sc.nextLine();
+                    if (line.startsWith("#") || line.trim().isBlank()) continue;
+                    LoginChatClient.LOGGER.info("Loading message: {}", line);
+                    commandsList.add(line);
+                }
+            } catch (FileNotFoundException ignored) {
+
+            }
+        }
+        return commandsList;
     }
 }

@@ -42,6 +42,9 @@ public class LoginChatConfig{
     @SerialEntry
     public int chatMessagesDelay = 0;
 
+    @SerialEntry
+    public boolean respectPaperMultiworlds =  false;
+
     public static Screen getModConfigScreenFactory(Screen parentScreen) {
         return YetAnotherConfigLib.create(LoginChatConfig.HANDLER, (defaults, config, builder) -> builder
                         .title(Text.of("Login Chat Config"))
@@ -100,7 +103,7 @@ public class LoginChatConfig{
                                         .binding(Binding.generic(defaults.isListPerServer,
                                                 () -> config.isListPerServer,
                                                 (val) -> config.isListPerServer = val))
-                                        .listener((booleanOption, aBoolean) -> {
+                                        .addListener((booleanOption, aBoolean) -> {
                                             if (config.isListPerServer && !MOD_CONFIG_FOLDER.exists()) MOD_CONFIG_FOLDER.mkdirs();
                                         })
                                         .build())
@@ -108,6 +111,14 @@ public class LoginChatConfig{
                                         .name(Text.translatable("loginchat.config.openfolder"))
                                         .description(OptionDescription.of(Text.translatable("loginchat.config.openfolder.desc")))
                                         .action((yaclScreen, buttonOption) -> Util.getOperatingSystem().open(MOD_CONFIG_FOLDER))
+                                        .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("loginchat.config.respectpapermultiworlds"))
+                                        .description(OptionDescription.of(Text.translatable("loginchat.config.respectpapermultiworlds.desc")))
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .binding(Binding.generic(defaults.respectPaperMultiworlds,
+                                                () -> config.respectPaperMultiworlds,
+                                                (val) -> config.respectPaperMultiworlds = val))
                                         .build())
                                 .build())
                 )

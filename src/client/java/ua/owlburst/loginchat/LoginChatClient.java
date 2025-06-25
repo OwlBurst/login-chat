@@ -13,13 +13,10 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ua.owlburst.loginchat.config.ConfigManager;
+import ua.owlburst.loginchat.config.LoginChatConfigManager;
 import ua.owlburst.loginchat.config.LoginChatConfig;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,8 +24,23 @@ public class LoginChatClient implements ClientModInitializer {
 	public static int delayedMessagesCount = 0;
 	public static final String MOD_ID = "loginchat";
 	public static final Logger LOGGER = LoggerFactory.getLogger("loginchat");
+	private static boolean isLoggedIn = false;
+
+	private static void send(MinecraftClient client, @NotNull ArrayList<String> commandsList) {
+		ExecutorService commandsExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "Login Chat"));
+		commandsList.forEach(el -> commandsExecutor.submit(new SendCommandTask(client, el)));
+	}
+
+	@Override
+	public void onInitializeClient() {
+		LoginChatConfigManager.init();
+		ClientPlayConnectionEvents.JOIN.register((LoginChatClient::onPlayReady));
+		ClientPlayConnectionEvents.DISCONNECT.register(LoginChatClient::onDisconnect);
+	}
 
 	private static void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+		if (LoginChatConfig.HANDLER.instance().respectPaperMultiworlds && isLoggedIn) {return;} // the messages have already been sent
+		isLoggedIn = true;
 		LoginChatClient.delayedMessagesCount = 0;
 		ArrayList<String> serversList = new ArrayList<>(LoginChatConfig.HANDLER.instance().serversList);
 		ArrayList<String> commandsList = new ArrayList<>(LoginChatConfig.HANDLER.instance().commandsList);
@@ -44,7 +56,9 @@ public class LoginChatClient implements ClientModInitializer {
 			String ip = handler.getConnection().getAddress().toString();
 			ip = ip.split("/")[0].replaceAll("\\.$", "");
 			if (serversList.contains(ip)) {
-				if (LoginChatConfig.HANDLER.instance().isListPerServer) send(client, ip);
+				if (LoginChatConfig.HANDLER.instance().isListPerServer)
+					// load messages from the configuration file corresponding to server
+					send(client, LoginChatConfigManager.load(ip));
                 else send(client, commandsList);
 			} else {
 				if (client.player != null) {
@@ -67,39 +81,15 @@ public class LoginChatClient implements ClientModInitializer {
 		} else {
 			if (LoginChatConfig.HANDLER.instance().isEnabledInSingleplayer) {
 				LOGGER.info("Joining the singleplayer world");
-				if (LoginChatConfig.HANDLER.instance().isListPerServer) send(client, "localhost");
+				if (LoginChatConfig.HANDLER.instance().isListPerServer)
+					// if per server, send from configuration file for localhost
+					send(client, LoginChatConfigManager.load("localhost"));
 				else send(client, commandsList);
 			}
 		}
 	}
 
-	private static void send(MinecraftClient client, @NotNull ArrayList<String> commandsList) {
-		ExecutorService commandsExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "Login Chat"));
-		commandsList.forEach(el -> commandsExecutor.submit(new SendCommandTask(client, el)));
-	}
-
-	private static void send(MinecraftClient client, @NotNull String ip) {
-		ArrayList<String> commandsList = new ArrayList<>();
-		File file = new File(LoginChatConfig.MOD_CONFIG_FOLDER, ip + ".txt");
-		if (file.exists()) {
-			try (Scanner sc = new Scanner(file)) {
-				while (sc.hasNextLine()) {
-					String line = sc.nextLine();
-					if (line.startsWith("#") || line.trim().isBlank()) continue;
-					LOGGER.info("Message: {}", line);
-					commandsList.add(line);
-				}
-			} catch (FileNotFoundException ignored) {
-
-			}
-		}
-		send(client, commandsList);
-	}
-
-	@Override
-	public void onInitializeClient() {
-		ConfigManager.init();
-		ClientPlayConnectionEvents.JOIN.register((LoginChatClient::onPlayReady));
-
+	private static void onDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+		isLoggedIn = false;
 	}
 }

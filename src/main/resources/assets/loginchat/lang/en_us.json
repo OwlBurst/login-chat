@@ -17,6 +17,9 @@
   "loginchat.config.delay": "Chat Messages Delay",
   "loginchat.config.delay.desc": "The amount of time in milliseconds that will pass since joining the server or the world before the chat messages you specified in the config will be sent",
 
+  "loginchat.config.respectpapermultiworlds": "Respect Paper Multiworlds",
+  "loginchat.config.respectpapermultiworlds.desc": "If true, the messages won't be sent again when hopping between the Paper subservers (think Multiverse-Core, MultiWorld). If false, the messages will be sent again and again when joining a new subserver.\nThe messages will be sent again when you Disconnect from the server into the main menu and rejoin the server back in.",
+
   "loginchat.chat.ip": "Server IP for the Login Chat configuration file:",
   "loginchat.chat.clipboard": "Copy the IP to clipboard",
   "loginchat.chat.listPerServerEnabled": "The Message List Per Server mode is enabled. Open the ModMenu config menu for more information."
