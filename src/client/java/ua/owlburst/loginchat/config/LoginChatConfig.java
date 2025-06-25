@@ -1,4 +1,4 @@
-package ua.owlburst.loginchat;
+package ua.owlburst.loginchat.config;
 
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import ua.owlburst.loginchat.LoginChatClient;
 
 import java.io.File;
 import java.text.MessageFormat;
