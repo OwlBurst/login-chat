@@ -43,6 +43,9 @@ public class LoginChatConfig{
     public int chatMessagesDelay = 0;
 
     @SerialEntry
+    public int delayBetweenMessages = 1000;
+
+    @SerialEntry
     public boolean respectPaperMultiworlds =  false;
 
     public static Screen getModConfigScreenFactory(Screen parentScreen) {
@@ -93,6 +96,18 @@ public class LoginChatConfig{
                                         .binding(Binding.generic(defaults.chatMessagesDelay,
                                                 () -> config.chatMessagesDelay,
                                                 (value) -> config.chatMessagesDelay = value))
+                                        .build())
+                                .option(Option.<Integer>createBuilder()
+                                        .name(Text.translatable("loginchat.config.delaybetween"))
+                                        .description(OptionDescription.of(Text.translatable("loginchat.config.delaybetween" +
+                                                ".desc")))
+                                        .controller(opt -> IntegerSliderControllerBuilder.create(opt)
+                                                .range(0, 4000)
+                                                .step(50)
+                                                .formatValue(val -> Text.of(MessageFormat.format("{0} ms", val))))
+                                        .binding(Binding.generic(defaults.delayBetweenMessages,
+                                                () -> config.delayBetweenMessages,
+                                                (value) -> config.delayBetweenMessages = value))
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Text.translatable("loginchat.config.messageslist.mode"))

@@ -17,6 +17,9 @@
   "loginchat.config.delay": "Chat Messages Delay",
   "loginchat.config.delay.desc": "The amount of time in milliseconds that will pass since joining the server or the world before the chat messages you specified in the config will be sent",
 
+  "loginchat.config.delaybetween": "Delay Between Messages",
+  "loginchat.config.delaybetween.desc": "Delay between individual chat messages. At 0 the game will try to send all the messages at the same time. Use with caution, as you might be kicked from servers for spamming if sending too many messages in a short period of time!\nVery low values might also kick you from servers if the game decides to send your chat messages out of order. It isn't recommended to push this value below at least 100-150ms.",
+
   "loginchat.config.respectpapermultiworlds": "Respect Paper Multiworlds",
   "loginchat.config.respectpapermultiworlds.desc": "If true, the messages won't be sent again when hopping between the Paper subservers (think Multiverse-Core, MultiWorld). If false, the messages will be sent again and again when joining a new subserver.\nThe messages will be sent again when you Disconnect from the server into the main menu and rejoin the server back in.",
 

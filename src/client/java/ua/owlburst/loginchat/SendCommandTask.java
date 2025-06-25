@@ -4,8 +4,6 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.minecraft.client.MinecraftClient;
 import ua.owlburst.loginchat.config.LoginChatConfig;
 
-import java.text.MessageFormat;
-
 import static java.lang.Thread.sleep;
 
 class SendCommandTask implements Runnable {
@@ -18,12 +16,13 @@ class SendCommandTask implements Runnable {
     }
 
     public void run() {
-        int chatMessagesDelay = LoginChatConfig.HANDLER.instance().chatMessagesDelay;
-        if (chatMessagesDelay > 0 && LoginChatClient.delayedMessagesCount <= 0) {
+        int messageStartDelay = LoginChatConfig.HANDLER.instance().chatMessagesDelay;
+        int delayBetweenMessages = LoginChatConfig.HANDLER.instance().delayBetweenMessages;
+        if (messageStartDelay > 0 && LoginChatClient.delayedMessagesCount <= 0) {
             LoginChatClient.LOGGER.info("Delaying the chat messages by {} " +
-                    "milliseconds", chatMessagesDelay);
+                    "milliseconds", messageStartDelay);
             try {
-                sleep(chatMessagesDelay);
+                sleep(messageStartDelay);
                 LoginChatClient.delayedMessagesCount++;
             } catch (InterruptedException ignored) {
             }
@@ -34,26 +33,29 @@ class SendCommandTask implements Runnable {
             for (int i = 0; i < 5; i++) {
                 if (ClientCommandManager.getActiveDispatcher() != null && client.player != null) {
                     client.player.networkHandler.sendChatCommand(input);
+                    delayMessage(delayBetweenMessages);
                     break;
                 } else {
-                    LoginChatClient.LOGGER.error(MessageFormat.format("Unable to execute the command: {0}...", input));
-                    try {
-                        sleep(1000);
-                    } catch (InterruptedException ignored) {
-                    }
+                    LoginChatClient.LOGGER.error("Unable to execute the command: {}...", input);
+                    delayMessage(delayBetweenMessages);
                 }
             }
         } else {
             if (client.player != null) {
                 LoginChatClient.LOGGER.info("Sending the chat message: {}", this.input);
                 client.player.networkHandler.sendChatMessage(input);
-                try {
-                    sleep(1000);
-                } catch (InterruptedException ignored) {
-                }
+                delayMessage(delayBetweenMessages);
             } else {
                 LoginChatClient.LOGGER.warn("Can't send the chat message, can't get the player data");
             }
+        }
+    }
+
+    private void delayMessage(int chatMessagesDelay) {
+        try {
+            LoginChatClient.LOGGER.info("Taking a break for {}ms...", chatMessagesDelay);
+            sleep(chatMessagesDelay);
+        } catch (InterruptedException ignored) {
         }
     }
 }
