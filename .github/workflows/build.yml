@@ -18,6 +18,11 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
+      - name: setup jdk ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'microsoft'
       - name: validate gradle wrapper
         run: |
           for i in {1..5}; do
@@ -25,11 +30,6 @@ jobs:
             echo "Retrying in 10 seconds..."
             sleep 10
           done
-      - name: setup jdk ${{ matrix.java }}
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: build
