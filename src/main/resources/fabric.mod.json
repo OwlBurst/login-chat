@@ -11,7 +11,7 @@
 		"sources": "https://github.com/whitebear60/login-chat",
       	"issues": "https://github.com/whitebear60/login-chat/issues"
     },
-	"license": "CC0-1.0",
+	"license": "GPL-3.0-or-later",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
