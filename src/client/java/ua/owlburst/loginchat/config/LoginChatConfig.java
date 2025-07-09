@@ -122,7 +122,7 @@ public class LoginChatConfig{
                                             if (config.isListPerServer && !MOD_CONFIG_FOLDER.exists()) {
                                                 MOD_CONFIG_FOLDER.mkdirs();
                                                 LoginChatClient.LOGGER.info("Creating the Login Chat config folder...");
-                                            };
+                                            }
                                         })
                                         .build())
                                 .option(ButtonOption.createBuilder()
