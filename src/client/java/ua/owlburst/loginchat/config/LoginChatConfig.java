@@ -17,6 +17,7 @@ import ua.owlburst.loginchat.LoginChatClient;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,6 +90,7 @@ public class LoginChatConfig{
                                         .controller(opt -> IntegerSliderControllerBuilder.create(opt)
                                                 .range(0, 10000)
                                                 .step(100)
+                                                .valueFormatter(val -> Text.of(MessageFormat.format("{0} ms", val)))
                                         )
                                         .binding(Binding.generic(defaults.chatMessagesDelay,
                                                 () -> config.chatMessagesDelay,
@@ -101,6 +103,7 @@ public class LoginChatConfig{
                                         .controller(opt -> IntegerSliderControllerBuilder.create(opt)
                                                 .range(0, 4000)
                                                 .step(50)
+                                                .valueFormatter(val -> Text.of(MessageFormat.format("{0} ms", val)))
                                         )
                                         .binding(Binding.generic(defaults.delayBetweenMessages,
                                                 () -> config.delayBetweenMessages,
