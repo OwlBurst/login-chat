@@ -1,51 +1,50 @@
 package ua.owlburst.loginchat.config;
 
+import com.google.gson.GsonBuilder;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
-import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
-import dev.isxander.yacl3.config.v2.api.SerialEntry;
-import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
-import dev.isxander.yacl3.platform.YACLPlatform;
+import dev.isxander.yacl3.config.ConfigEntry;
+import dev.isxander.yacl3.config.ConfigInstance;
+import dev.isxander.yacl3.config.GsonConfigInstance;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import ua.owlburst.loginchat.LoginChatClient;
 
 import java.io.File;
-import java.text.MessageFormat;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LoginChatConfig{
-    public static final File MOD_CONFIG_FOLDER = YACLPlatform.getConfigDir().resolve(LoginChatClient.MOD_ID).toFile();
-    public static ConfigClassHandler<LoginChatConfig> HANDLER = ConfigClassHandler.createBuilder(LoginChatConfig.class)
-            .id(Identifier.tryParse(LoginChatClient.MOD_ID, "config"))
-            .serializer(config -> GsonConfigSerializerBuilder.create(config)
-                    .setPath(YACLPlatform.getConfigDir().resolve(LoginChatClient.MOD_ID + ".json"))
-                    .build())
+    private static final File MINECRAFT_CONFIG_FOLDER = new File(MinecraftClient.getInstance().runDirectory.getPath(), "config");
+    public static final File MOD_CONFIG_FOLDER = new File(MINECRAFT_CONFIG_FOLDER, LoginChatClient.MOD_ID);
+    public static final ConfigInstance<LoginChatConfig> HANDLER = GsonConfigInstance.createBuilder(LoginChatConfig.class)
+            .setPath(Path.of(MOD_CONFIG_FOLDER.getParentFile().getPath(), LoginChatClient.MOD_ID + ".json"))
+            .overrideGsonBuilder(new GsonBuilder().setPrettyPrinting())
             .build();
 
-    @SerialEntry
+    @ConfigEntry
     public boolean isEnabledInSingleplayer = false;
-    @SerialEntry
+    @ConfigEntry
     public List<String> serversList = new ArrayList<>();
-    @SerialEntry
+    @ConfigEntry
     public List<String> commandsList = new ArrayList<>();
 
-    @SerialEntry
+    @ConfigEntry
     public boolean isListPerServer = false;
 
-    @SerialEntry
+    @ConfigEntry
     public int chatMessagesDelay = 0;
 
-    @SerialEntry
+    @ConfigEntry
     public int delayBetweenMessages = 1000;
 
-    @SerialEntry
+    @ConfigEntry
     public boolean respectPaperMultiworlds =  false;
 
     public static Screen getModConfigScreenFactory(Screen parentScreen) {
@@ -55,7 +54,7 @@ public class LoginChatConfig{
                                 .name(Text.of("Login Chat"))
                                 .group(ListOption.<String>createBuilder()
                                         .name(Text.translatable("loginchat.config.serverslist"))
-                                        .description(OptionDescription.of(Text.translatable("loginchat.config.serverslist")))
+                                        .description(OptionDescription.of(Text.translatable("loginchat.config.serverslist.desc")))
                                         .controller(StringControllerBuilder::create)
                                         .binding(
                                                 defaults.serversList,
@@ -63,7 +62,6 @@ public class LoginChatConfig{
                                                 (value) -> config.serversList = value
                                         )
                                         .initial("")
-                                        .insertEntriesAtEnd(true)
                                         .build())
                                 .group(ListOption.<String>createBuilder()
                                         .name(Text.translatable("loginchat.config.messageslist"))
@@ -75,7 +73,6 @@ public class LoginChatConfig{
                                                 (value) -> config.commandsList = value
                                         )
                                         .initial("")
-                                        .insertEntriesAtEnd(true)
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Text.translatable("loginchat.config.singleplayer"))
@@ -92,7 +89,7 @@ public class LoginChatConfig{
                                         .controller(opt -> IntegerSliderControllerBuilder.create(opt)
                                                 .range(0, 10000)
                                                 .step(100)
-                                                .formatValue(val -> Text.of(MessageFormat.format("{0} ms", val))))
+                                        )
                                         .binding(Binding.generic(defaults.chatMessagesDelay,
                                                 () -> config.chatMessagesDelay,
                                                 (value) -> config.chatMessagesDelay = value))
@@ -104,7 +101,7 @@ public class LoginChatConfig{
                                         .controller(opt -> IntegerSliderControllerBuilder.create(opt)
                                                 .range(0, 4000)
                                                 .step(50)
-                                                .formatValue(val -> Text.of(MessageFormat.format("{0} ms", val))))
+                                        )
                                         .binding(Binding.generic(defaults.delayBetweenMessages,
                                                 () -> config.delayBetweenMessages,
                                                 (value) -> config.delayBetweenMessages = value))
@@ -113,13 +110,16 @@ public class LoginChatConfig{
                                         .name(Text.translatable("loginchat.config.messageslist.mode"))
                                         .description(OptionDescription.of(Text.translatable("loginchat.config.messageslist.mode.desc")))
                                         .controller(booleanOption -> BooleanControllerBuilder.create(booleanOption)
-                                                .formatValue(value -> value ? Text.literal("PER_SERVER") : Text.literal("SHARED"))
+                                                .valueFormatter(value -> value ? Text.literal("PER_SERVER") : Text.literal("SHARED"))
                                                 .coloured(true))
                                         .binding(Binding.generic(defaults.isListPerServer,
                                                 () -> config.isListPerServer,
                                                 (val) -> config.isListPerServer = val))
-                                        .addListener((booleanOption, aBoolean) -> {
-                                            if (config.isListPerServer && !MOD_CONFIG_FOLDER.exists()) MOD_CONFIG_FOLDER.mkdirs();
+                                        .listener((booleanOption, aBoolean) -> {
+                                            if (config.isListPerServer && !MOD_CONFIG_FOLDER.exists()) {
+                                                MOD_CONFIG_FOLDER.mkdirs();
+                                                LoginChatClient.LOGGER.info("Creating the Login Chat config folder...");
+                                            };
                                         })
                                         .build())
                                 .option(ButtonOption.createBuilder()

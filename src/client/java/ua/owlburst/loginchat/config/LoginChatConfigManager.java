@@ -46,7 +46,7 @@ public class LoginChatConfigManager {
                                 /say And I am a command that will be executed upon joining the said server after the message above will be sent.
                                 # Just like the shared Messages List in the GUI and JSON config, just customised per server!
                                 """
-                        ).getLiteralString());
+                        ).getString());
                     }
                 }
             } catch (IOException e) {

@@ -39,11 +39,11 @@ public class LoginChatClient implements ClientModInitializer {
 	}
 
 	private static void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
-		if (LoginChatConfig.HANDLER.instance().respectPaperMultiworlds && isLoggedIn) {return;} // the messages have already been sent
+		if (LoginChatConfig.HANDLER.getConfig().respectPaperMultiworlds && isLoggedIn) {return;} // the messages have already been sent
 		isLoggedIn = true;
 		LoginChatClient.delayedMessagesCount = 0;
-		ArrayList<String> serversList = new ArrayList<>(LoginChatConfig.HANDLER.instance().serversList);
-		ArrayList<String> commandsList = new ArrayList<>(LoginChatConfig.HANDLER.instance().commandsList);
+		ArrayList<String> serversList = new ArrayList<>(LoginChatConfig.HANDLER.getConfig().serversList);
+		ArrayList<String> commandsList = new ArrayList<>(LoginChatConfig.HANDLER.getConfig().commandsList);
 		LOGGER.info("Server in the list: {}", serversList.toArray());
 		boolean isSinglePlayer;
 		try {
@@ -56,7 +56,7 @@ public class LoginChatClient implements ClientModInitializer {
 			String ip = handler.getConnection().getAddress().toString();
 			ip = ip.split("/")[0].replaceAll("\\.$", "");
 			if (serversList.contains(ip)) {
-				if (LoginChatConfig.HANDLER.instance().isListPerServer)
+				if (LoginChatConfig.HANDLER.getConfig().isListPerServer)
 					// load messages from the configuration file corresponding to server
 					send(client, LoginChatConfigManager.load(ip));
                 else send(client, commandsList);
@@ -66,22 +66,22 @@ public class LoginChatClient implements ClientModInitializer {
 							.sendMessage(Text.literal("[Login Chat] ").append(Text.translatable("loginchat.chat.ip")).append(Text.of(" "))
 							.append(Text.literal(ip)
 									.setStyle(Style.EMPTY
-											.withClickEvent(new ClickEvent.SuggestCommand(ip))
+											.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, ip))
 											.withFormatting(Formatting.YELLOW)
-											.withHoverEvent(new HoverEvent.ShowText(Text.translatable("loginchat.chat.clipboard")))
+											.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("loginchat.chat.clipboard")))
 									)
 							)
 							, false);
-					if (LoginChatConfig.HANDLER.instance().isListPerServer) {
+					if (LoginChatConfig.HANDLER.getConfig().isListPerServer) {
 						client.player.sendMessage(Text.literal("[Login Chat] ").append(Text.translatable("loginchat.chat.listPerServerEnabled")).append(Text.of(" ")), false);
 					}
 				}
 				LOGGER.info("Connecting to the server: {}", ip);
 			}
 		} else {
-			if (LoginChatConfig.HANDLER.instance().isEnabledInSingleplayer) {
+			if (LoginChatConfig.HANDLER.getConfig().isEnabledInSingleplayer) {
 				LOGGER.info("Joining the singleplayer world");
-				if (LoginChatConfig.HANDLER.instance().isListPerServer)
+				if (LoginChatConfig.HANDLER.getConfig().isListPerServer)
 					// if per server, send from configuration file for localhost
 					send(client, LoginChatConfigManager.load("localhost"));
 				else send(client, commandsList);

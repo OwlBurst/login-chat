@@ -16,8 +16,8 @@ class SendCommandTask implements Runnable {
     }
 
     public void run() {
-        int messageStartDelay = LoginChatConfig.HANDLER.instance().chatMessagesDelay;
-        int delayBetweenMessages = LoginChatConfig.HANDLER.instance().delayBetweenMessages;
+        int messageStartDelay = LoginChatConfig.HANDLER.getConfig().chatMessagesDelay;
+        int delayBetweenMessages = LoginChatConfig.HANDLER.getConfig().delayBetweenMessages;
         if (messageStartDelay > 0 && LoginChatClient.delayedMessagesCount <= 0) {
             LoginChatClient.LOGGER.info("Delaying the chat messages by {} " +
                     "milliseconds", messageStartDelay);
