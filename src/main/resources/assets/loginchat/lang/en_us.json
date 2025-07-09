@@ -3,7 +3,13 @@
   "loginchat.config.serverslist.desc": "List of servers on which the mod is enabled",
 
   "loginchat.config.messageslist": "Messages List",
-  "loginchat.config.messageslist.desc": "List of the messages the mod should send at the start of the session. May contain commands, those should start with a /.",
+  "loginchat.config.messageslist.desc": "List of the messages the mod should send at the start of the session. May contain commands, those should start with a /. This list is ignored if the Messages List Mode is set to PER_SERVER",
+
+  "loginchat.config.messageslist.mode": "Messages List Mode",
+  "loginchat.config.messageslist.mode.desc": "SHARED - the messages sent to all servers in the list will be the same and specified in the Messages List field of this config file\n\nPER_SERVER - the messages sent to every server will be custom and will need to be specified in the text files in the mod config folder",
+
+  "loginchat.config.openfolder": "Open Messages List Folder",
+  "loginchat.config.openfolder.desc": "Opens the folder containing the messages list files for the PER_SERVER messages list mode using your system's file manager",
 
   "loginchat.config.singleplayer": "Enabled in singleplayer?",
   "loginchat.config.singleplayer.desc": "Should the mod send the messages, specified in the messages list, at the start of the singleplayer session?",
@@ -11,6 +17,13 @@
   "loginchat.config.delay": "Chat Messages Delay",
   "loginchat.config.delay.desc": "The amount of time in milliseconds that will pass since joining the server or the world before the chat messages you specified in the config will be sent",
 
+  "loginchat.config.delaybetween": "Delay Between Messages",
+  "loginchat.config.delaybetween.desc": "Delay between individual chat messages. At 0 the game will try to send all the messages at the same time. Use with caution, as you might be kicked from servers for spamming if sending too many messages in a short period of time!\nVery low values might also kick you from servers if the game decides to send your chat messages out of order. It isn't recommended to push this value below at least 100-150ms.",
+
+  "loginchat.config.respectpapermultiworlds": "Respect Paper Multiworlds",
+  "loginchat.config.respectpapermultiworlds.desc": "If true, the messages won't be sent again when hopping between the Paper subservers (think Multiverse-Core, MultiWorld). If false, the messages will be sent again and again when joining a new subserver.\nThe messages will be sent again when you Disconnect from the server into the main menu and rejoin the server back in.",
+
   "loginchat.chat.ip": "Server IP for the Login Chat configuration file:",
-  "loginchat.chat.clipboard": "Copy the IP to clipboard"
+  "loginchat.chat.clipboard": "Copy the IP to clipboard",
+  "loginchat.chat.listPerServerEnabled": "The Message List Per Server mode is enabled. Open the ModMenu config menu for more information."
 }

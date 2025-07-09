@@ -13,8 +13,9 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ua.owlburst.loginchat.config.LoginChatConfigManager;
+import ua.owlburst.loginchat.config.LoginChatConfig;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,45 +24,7 @@ public class LoginChatClient implements ClientModInitializer {
 	public static int delayedMessagesCount = 0;
 	public static final String MOD_ID = "loginchat";
 	public static final Logger LOGGER = LoggerFactory.getLogger("loginchat");
-	private static void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
-		LoginChatClient.delayedMessagesCount = 0;
-		ArrayList<String> serversList = new ArrayList<>(LoginChatConfig.HANDLER.instance().serversList);
-		ArrayList<String> commandsList = new ArrayList<>(LoginChatConfig.HANDLER.instance().commandsList);
-		LOGGER.info(MessageFormat.format("Server in the list: {0}", serversList.toArray()));
-		boolean isSinglePlayer;
-		try {
-			isSinglePlayer = client.getServer().isSingleplayer();
-		} catch (NullPointerException e) {
-			isSinglePlayer = false;
-		}
-		LOGGER.info("Is singleplayer? - " + isSinglePlayer);
-		if(!isSinglePlayer) {
-			String ip = handler.getConnection().getAddress().toString();
-			ip = ip.split("/")[0].replaceAll("\\.$", "");
-			if (serversList.contains(ip)) {
-				send(client, commandsList);
-			} else {
-				if (client.player != null) {
-					client.player
-							.sendMessage(Text.literal("[Login Chat] ").append(Text.translatable("loginchat.chat.ip")).append(Text.of(" "))
-							.append(Text.literal(ip)
-									.setStyle(Style.EMPTY
-											.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, ip))
-											.withFormatting(Formatting.YELLOW)
-											.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("loginchat.chat.clipboard")))
-									)
-							)
-							);
-				}
-				LOGGER.info("Connecting to the server: {}", ip);
-			}
-		} else {
-			if (LoginChatConfig.HANDLER.instance().isEnabledInSingleplayer) {
-				LOGGER.info("Joining the singleplayer world");
-				send(client, commandsList);
-			}
-		}
-	}
+	private static boolean isLoggedIn = false;
 
 	private static void send(MinecraftClient client, @NotNull ArrayList<String> commandsList) {
 		ExecutorService commandsExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "Login Chat"));
@@ -70,8 +33,63 @@ public class LoginChatClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		LoginChatConfig.HANDLER.load();
+		LoginChatConfigManager.init();
 		ClientPlayConnectionEvents.JOIN.register((LoginChatClient::onPlayReady));
+		ClientPlayConnectionEvents.DISCONNECT.register(LoginChatClient::onDisconnect);
+	}
 
+	private static void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+		if (LoginChatConfig.HANDLER.instance().respectPaperMultiworlds && isLoggedIn) {return;} // the messages have already been sent
+		isLoggedIn = true;
+		LoginChatClient.delayedMessagesCount = 0;
+		ArrayList<String> serversList = new ArrayList<>(LoginChatConfig.HANDLER.instance().serversList);
+		ArrayList<String> commandsList = new ArrayList<>(LoginChatConfig.HANDLER.instance().commandsList);
+		LOGGER.info("Server in the list: {}", serversList.toArray());
+		boolean isSinglePlayer;
+		try {
+			isSinglePlayer = client.getServer().isSingleplayer();
+		} catch (NullPointerException e) {
+			isSinglePlayer = false;
+		}
+        LOGGER.info("Is singleplayer? - {}", isSinglePlayer);
+		if(!isSinglePlayer) {
+			String ip = handler.getConnection().getAddress().toString();
+			ip = ip.split("/")[0].replaceAll("\\.$", "");
+			if (serversList.contains(ip)) {
+				if (LoginChatConfig.HANDLER.instance().isListPerServer)
+					// load messages from the configuration file corresponding to server
+					send(client, LoginChatConfigManager.load(ip));
+                else send(client, commandsList);
+			} else {
+				if (client.player != null) {
+					client.player
+							.sendMessage(Text.literal("[Login Chat] ").append(Text.translatable("loginchat.chat.ip")).append(Text.of(" "))
+							.append(Text.literal(ip)
+									.setStyle(Style.EMPTY
+											.withClickEvent(new ClickEvent.SuggestCommand(ip))
+											.withFormatting(Formatting.YELLOW)
+											.withHoverEvent(new HoverEvent.ShowText(Text.translatable("loginchat.chat.clipboard")))
+									)
+							)
+							, false);
+					if (LoginChatConfig.HANDLER.instance().isListPerServer) {
+						client.player.sendMessage(Text.literal("[Login Chat] ").append(Text.translatable("loginchat.chat.listPerServerEnabled")).append(Text.of(" ")), false);
+					}
+				}
+				LOGGER.info("Connecting to the server: {}", ip);
+			}
+		} else {
+			if (LoginChatConfig.HANDLER.instance().isEnabledInSingleplayer) {
+				LOGGER.info("Joining the singleplayer world");
+				if (LoginChatConfig.HANDLER.instance().isListPerServer)
+					// if per server, send from configuration file for localhost
+					send(client, LoginChatConfigManager.load("localhost"));
+				else send(client, commandsList);
+			}
+		}
+	}
+
+	private static void onDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+		isLoggedIn = false;
 	}
 }
