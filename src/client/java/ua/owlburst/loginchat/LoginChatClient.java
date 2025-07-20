@@ -66,9 +66,9 @@ public class LoginChatClient implements ClientModInitializer {
 							.sendMessage(Text.literal("[Login Chat] ").append(Text.translatable("loginchat.chat.ip")).append(Text.of(" "))
 							.append(Text.literal(ip)
 									.setStyle(Style.EMPTY
-											.withClickEvent(new ClickEvent.SuggestCommand(ip))
+											.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, ip))
 											.withFormatting(Formatting.YELLOW)
-											.withHoverEvent(new HoverEvent.ShowText(Text.translatable("loginchat.chat.clipboard")))
+											.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("loginchat.chat.clipboard")))
 									)
 							)
 							, false);
