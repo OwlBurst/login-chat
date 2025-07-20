@@ -2,16 +2,17 @@
 	"schemaVersion": 1,
 	"id": "loginchat",
 	"version": "${version}",
-	"name": "LoginChat",
+	"name": "Login Chat",
 	"description": "The mod that sends chat messages after connecting to the server",
 	"authors": [
 		"Owl Burst"
 	],
 	"contact": {
-		"sources": "https://github.com/whitebear60/login-chat"
+		"sources": "https://github.com/whitebear60/login-chat",
+		"issues": "https://github.com/whitebear60/login-chat/issues"
 	},
-	"license": "CC0-1.0",
-	"environment": "*",
+	"license": "GPL-3.0-or-later",
+	"environment": "client",
 	"entrypoints": {
 		"client": [
 			"ua.owlburst.loginchat.LoginChatClient"
@@ -22,9 +23,12 @@
 	},
 	"depends": {
 		"fabricloader": ">=0.15.3",
-		"minecraft": "~1.19.2",
+		"minecraft": "~1.19",
 		"java": ">=17",
 		"fabric-api": "*",
-		"yet-another-config-lib": "*"
+		"yet_another_config_lib_v3": "*"
+	},
+	"recommends": {
+		"modmenu": "*"
 	}
 }
